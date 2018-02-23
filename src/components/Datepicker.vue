@@ -22,7 +22,8 @@
         :clear-button="clearButton"
         :disabled="disabledPicker"
         :required="required"
-        readonly>
+        :readonly="!pattern"
+        :pattern="pattern">
       <!-- Clear Button -->
       <span v-if="clearButton && selectedDate" class="vdp-datepicker__clear-button" :class="{'input-group-addon' : bootstrapStyling}" @click="clearDate()">
         <i :class="clearButtonIcon">
@@ -157,7 +158,8 @@ export default {
     maximumView: {
       type: String,
       default: 'year'
-    }
+    },
+    pattern: String
   },
   data () {
     const startDate = this.openDate ? new Date(this.openDate) : new Date()
@@ -326,24 +328,11 @@ export default {
     /**
      * Close all calendar layers
      */
-    document () {
-      if (window && window.document) {
-        return window.document
-      }
-      return {
-        addEventListener () {
-
-        },
-        removeEventListener () {
-
-        }
-      }
-    },
     close (full) {
       this.showDayView = this.showMonthView = this.showYearView = false
       if (!this.isInline) {
         if (full) this.$emit('closed')
-        this.document().removeEventListener('click', this.clickOutside, false)
+        document.removeEventListener('click', this.clickOutside, false)
       }
     },
     resetDefaultDate () {
@@ -420,7 +409,7 @@ export default {
     addOutsideClickListener () {
       if (!this.isInline) {
         setTimeout(() => {
-          this.document().addEventListener('click', this.clickOutside, false)
+          document.addEventListener('click', this.clickOutside, false)
         }, 100)
       }
     },
@@ -838,7 +827,7 @@ export default {
         }
         this.resetDefaultDate()
         this.close(true)
-        this.document().removeEventListener('click', this.clickOutside, false)
+        document.removeEventListener('click', this.clickOutside, false)
       }
     },
     dayClasses (day) {
